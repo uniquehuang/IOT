@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:int-mqtt="http://www.springframework.org/schema/integration/mqtt"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/integration
+        http://www.springframework.org/schema/integration/spring-integration-4.1.xsd
+         http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+         http://www.springframework.org/schema/integration/mqtt
+         http://www.springframework.org/schema/integration/mqtt/spring-integration-mqtt-4.1.xsd
+         http://www.springframework.org/schema/context
+         http://www.springframework.org/schema/context/spring-context-3.1.xsd ">
+
+    <context:property-placeholder location="classpath:db.properties" ignore-unresolvable="true"/>
+
+    <!--MQTT配置-->
+    <bean id="clientFactory"
+          class="org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory">
+        <property name="connectionOptions" ref="options"/>
+        <!--                <property name="userName" value="${mqtt.username}"/>-->
+        <!--                <property name="password" value="${mqtt.password}"/>-->
+        <!--                <property name="cleanSession" value="${mqtt.cleanSession}"/>-->
+        <!--                <property name="keepAliveInterval" value="${mqtt.keepAliveInterval}"/>-->
+        <!--                <property name="serverURIs">-->
+        <!--                    <array>-->
+        <!--                        <value>${mqtt.serverURL}</value>-->
+        <!--                    </array>-->
+        <!--                </property>-->
+    </bean>
+
+    <bean id="options" class="org.eclipse.paho.client.mqttv3.MqttConnectOptions">
+        <property name="userName" value="${mqtt.username}"/>
+        <property name="password" value="${mqtt.password}"/>
+        <property name="cleanSession" value="${mqtt.cleanSession}"/>
+        <property name="keepAliveInterval" value="${mqtt.keepAliveInterval}"/>
+        <property name="serverURIs">
+            <array>
+                <value>${mqtt.serverURL}</value>
+            </array>
+        </property>
+    </bean>
+
+    <bean id="mqttHandler" class="org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler">
+        <constructor-arg name="clientId" value="mqtt.clientId"/>
+        <constructor-arg name="clientFactory" ref="clientFactory"/>
+        <property name="async" value="${mqtt.async}"/>
+        <property name="defaultQos" value="${mqtt.defaultQos}"/>
+        <property name="converter" ref="myConverter"/>
+        <property name="completionTimeout" value="${mqtt.completionTimeout}"/>
+    </bean>
+
+    <!-- 消息适配器 -->
+    <int-mqtt:message-driven-channel-adapter
+            id="mqttInbound"
+            client-id="${mqtt.clientId}"
+            url="${mqtt.serverURL}"
+            topics="${mqtt.topic}"
+            qos="${mqtt.defaultQos}"
+            client-factory="clientFactory"
+            converter="myConverter"
+            auto-startup="true"
+            send-timeout="${mqtt.completionTimeout}"
+            channel="startCase"/>
+    <int:channel id="startCase"/>
+
+    <!-- 消息处理类 -->
+    <int:service-activator id="handlerService"
+                           input-channel="startCase"
+                           ref="mqttService"
+                           method="handler"/>
+
+    <bean id="myConverter" class="org.springframework.integration.mqtt.support.DefaultPahoMessageConverter">
+        <property name="payloadAsBytes" value="true"/>
+    </bean>
+
+    <!-- 消息处理 -->
+    <bean id="mqttService" class="com.ctw.service.impl.MqttServiceImpl"/>
+
+</beans>

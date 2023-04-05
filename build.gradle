@@ -1,0 +1,71 @@
+plugins {
+    id 'war'
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    mavenCentral()
+}
+processResources {
+    from('src/main/java') {
+        include '**/*.xml'
+    }
+}
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+
+    implementation 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor("org.projectlombok:lombok:1.18.20")
+
+    implementation group: 'com.baomidou', name: 'mybatis-plus', version: '3.5.1'
+
+    implementation group: 'org.springframework', name: 'spring-context', version: '5.3.19'
+    implementation group: 'org.springframework', name: 'spring-core', version: '5.3.19'
+    implementation group: 'org.springframework', name: 'spring-beans', version: '5.3.19'
+    implementation group: 'org.springframework', name: 'spring-aspects', version: '5.3.19'
+    implementation group: 'org.springframework', name: 'spring-webmvc', version: '5.3.19'
+    implementation group: 'org.springframework', name: 'spring-jdbc', version: '5.3.19'
+
+    //swagger
+    implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
+    implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
+
+    implementation group: 'com.alibaba', name: 'druid', version: '1.2.9'
+
+    implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.28'
+
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.2.2'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.13.2'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.13.2'
+
+    compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
+
+    implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+
+    implementation group: 'org.springframework.data', name: 'spring-data-mongodb', version: '3.4.0'
+    implementation group: 'org.mongodb', name: 'mongodb-driver-sync', version: '4.6.0'
+
+    testImplementation group: 'org.springframework', name: 'spring-test', version: '5.3.20'
+
+    implementation group: 'org.eclipse.paho', name: 'org.eclipse.paho.client.mqttv3', version: '1.2.5'
+
+    //mqtt
+    implementation group: 'org.springframework.integration', name: 'spring-integration-core', version: '5.5.12'
+    implementation group: 'org.springframework.integration', name: 'spring-integration-stream', version: '5.5.12'
+    implementation group: 'org.springframework.integration', name: 'spring-integration-mqtt', version: '5.5.12'
+
+    //使用spring-Data-Redis封装的TokenManger，Token Manager对Token进行基础的操作
+    implementation group: 'org.springframework.data', name: 'spring-data-redis', version: '2.5.0'
+    implementation group: 'redis.clients', name: 'jedis', version: '3.6.0'
+
+}
+
+test {
+    useJUnitPlatform()
+}
